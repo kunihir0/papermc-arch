@@ -4,7 +4,7 @@ ARG JAVA_VERSION=17
 ################################
 ### We use a java base image ###
 ################################
-FROM openjdk:${JAVA_VERSION}-alpine AS build
+FROM eclipse-temurin:${JAVA_VERSION}-alpine AS build
 
 
 #####################################
@@ -43,7 +43,7 @@ RUN ls -al
 ###########################
 ### Running environment ###
 ###########################
-FROM yantis/archlinux-small AS runtime
+FROM eclipse-temurin:17-alpine AS runtime
 
 ##########################
 ### Environment & ARGS ###
@@ -80,8 +80,7 @@ RUN chmod +x docker-entrypoint.sh
 ############
 ### User ###
 ############
-RUN mkdir ${LOGS_PATH} ${DATA_PATH} ${WORLDS_PATH} ${PLUGINS_PATH} ${CONFIG_PATH} && \
-chown -R docker:docker ${MINECRAFT_PATH}
+RUN mkdir ${LOGS_PATH} ${DATA_PATH} ${WORLDS_PATH} ${PLUGINS_PATH} ${CONFIG_PATH}
 
 #########################
 ### Setup environment ###
@@ -111,9 +110,6 @@ VOLUME "${LOGS_PATH}"
 ### Expose minecraft port ###
 #############################
 EXPOSE 25565
-
-RUN pacman -Syy --noconfirm && \
-pacman --noconfirm -S jre17-openjdk-headless
 
 ######################################
 ### Entrypoint is the start script ###
