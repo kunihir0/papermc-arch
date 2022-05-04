@@ -1,23 +1,24 @@
 # Java Version
-ARG JAVA_VERSION=16
+ARG JAVA_VERSION=17
 
 ################################
 ### We use a java base image ###
 ################################
 FROM openjdk:${JAVA_VERSION}-alpine AS build
 
+
 #####################################
-### Maintained by Felix Klauke    ###
-### Contact: info@felix-klauke.de ###
+### Maintained by kunihir0        ###
+### Contact: kunihir0@tutanota.com###
 #####################################
-LABEL maintainer="Felix Klauke <info@felix-klauke.de>"
+LABEL maintainer="kunihiro <kunihiro@tutanota.com>"
 
 #################
 ### Arguments ###
 #################
-ARG PAPER_VERSION=1.17
-ARG PAPER_DOWNLOAD_URL=https://papermc.io/api/v1/paper/${PAPER_VERSION}/latest/download
-ARG MINECRAFT_BUILD_USER=minecraft-build
+ARG PAPER_VERSION=1.18.2
+ARG PAPER_BUILD=317
+ARG PAPER_DOWNLOAD_URL="https://papermc.io/api/v2/projects/paper/versions/${PAPER_VERSION}/builds/${PAPER_BUILD}/downloads/paper-${PAPER_VERSION}-${PAPER_BUILD}.jar"
 ENV MINECRAFT_BUILD_PATH=/opt/minecraft
 
 #########################
@@ -30,26 +31,19 @@ WORKDIR ${MINECRAFT_BUILD_PATH}
 ##########################
 ADD ${PAPER_DOWNLOAD_URL} paper.jar
 
-############
-### User ###
-############
-RUN adduser -s /bin/bash ${MINECRAFT_BUILD_USER} -D && \
-    chown ${MINECRAFT_BUILD_USER} ${MINECRAFT_BUILD_PATH} -R
-
-USER ${MINECRAFT_BUILD_USER}
-
 ############################################
 ### Run paperclip and obtain patched jar ###
 ############################################
 RUN java -jar ${MINECRAFT_BUILD_PATH}/paper.jar; exit 0
+RUN ls -al
 
 # Copy built jar
-RUN mv ${MINECRAFT_BUILD_PATH}/cache/patched*.jar ${MINECRAFT_BUILD_PATH}/paper.jar
+#RUN mv ${MINECRAFT_BUILD_PATH}/cache/patched*.jar ${MINECRAFT_BUILD_PATH}/paper.jar
 
 ###########################
 ### Running environment ###
 ###########################
-FROM openjdk:${JAVA_VERSION}-alpine AS runtime
+FROM yantis/archlinux-small AS runtime
 
 ##########################
 ### Environment & ARGS ###
@@ -66,18 +60,6 @@ ENV JAVA_HEAP_SIZE=4G
 ENV JAVA_ARGS="-server -Dcom.mojang.eula.agree=true"
 ENV SPIGOT_ARGS="--nojline"
 ENV PAPER_ARGS=""
-
-#################
-### Libraries ###
-#################
-RUN apk add py3-pip
-RUN pip3 install mcstatus
-
-###################
-### Healthcheck ###
-###################
-HEALTHCHECK --interval=10s --timeout=5s --start-period=120s \
-    CMD mcstatus localhost:$( cat $PROPERTIES_LOCATION | grep "server-port" | cut -d'=' -f2 ) ping
 
 #########################
 ### Working directory ###
@@ -98,12 +80,8 @@ RUN chmod +x docker-entrypoint.sh
 ############
 ### User ###
 ############
-RUN addgroup minecraft && \
-    adduser -s /bin/bash minecraft -G minecraft -h ${MINECRAFT_PATH} -D && \
-    mkdir ${LOGS_PATH} ${DATA_PATH} ${WORLDS_PATH} ${PLUGINS_PATH} ${CONFIG_PATH} && \
-    chown -R minecraft:minecraft ${MINECRAFT_PATH}
-
-USER minecraft
+RUN mkdir ${LOGS_PATH} ${DATA_PATH} ${WORLDS_PATH} ${PLUGINS_PATH} ${CONFIG_PATH} && \
+chown -R docker:docker ${MINECRAFT_PATH}
 
 #########################
 ### Setup environment ###
@@ -140,4 +118,4 @@ EXPOSE 25565
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 
 # Run Command
-CMD [ "serve" ]
+CMD ["serve"]
