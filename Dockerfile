@@ -112,6 +112,9 @@ VOLUME "${LOGS_PATH}"
 #############################
 EXPOSE 25565
 
+RUN pacman -Syy --noconfirm && \
+pacman --noconfirm -S jre17-openjdk-headless
+
 ######################################
 ### Entrypoint is the start script ###
 ######################################
