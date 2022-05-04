@@ -1,8 +1,6 @@
-version: '3.7'
-
 services:
   papermc_server:
-    image: kunihir0/papermc_arch:1.18.2
+    image: ghcr.io/kunihir0/papermc-arch:1.18.2
     container_name: papermc_server
     stdin_open: true
     tty: true
@@ -19,11 +17,11 @@ services:
       - minecraft-logs:/opt/minecraft/logs
 
 volumes:
-  minecraft-config: {}
-  minecraft-worlds: {}
-  minecraft-plugins: {}
-  minecraft-data: {}
-  minecraft-logs: {}
+  minecraft-config: {'/home/kunihiro/Documents/pmc'}
+  minecraft-worlds: {'/home/kunihiro/Documents/pmc/worlds'}
+  minecraft-plugins: {'/home/kunihiro/Documents/pmc/plugins'}
+  minecraft-data: {'/home/kunihiro/Documents/pmc/data'}
+  minecraft-logs: {'/home/kunihiro/Documents/pmc/logs'}
 
 networks:
   papermc_server: {}
