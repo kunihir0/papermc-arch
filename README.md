@@ -11,7 +11,7 @@ docker run -it \
     -v ~/minecraft/plugins:/opt/minecraft/plugins \
     -v ~/minecraft/data:/opt/minecraft/data \
     -v ~/minecraft/logs:/opt/minecraft/logs \
-    felixklauke/paperspigot:1.16.5
+    ghcr.io/kunihir0/papermc-arch:1.18.2
 ```
 
 # Tags and Versions
