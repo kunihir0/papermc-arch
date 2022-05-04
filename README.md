@@ -16,7 +16,7 @@ docker run -it \
 
 # Tags and Versions
 The Docker images are tagged for their Minecraft versions. These versions are currently available:
-- `kunihir0/papermc_arch:1.18.2`
+- ghcr.io/kunihir0/papermc-arch:1.18.2
 
 # Volumes
 There are five volumes which are used for:
